@@ -3,132 +3,132 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://bombons.github.io/hack/categories/</loc>
+    <loc>https://bombons.github.io/categories/</loc>
     <lastmod>2020-04-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/</loc>
+    <loc>https://bombons.github.io/</loc>
     <lastmod>2020-04-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/</loc>
+    <loc>https://bombons.github.io/post/</loc>
     <lastmod>2020-04-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/2020-04-03-pwm-regulated-fan-based-on-cpu-temperature-for-raspberry-pi/</loc>
+    <loc>https://bombons.github.io/post/2020-04-03-pwm-regulated-fan-based-on-cpu-temperature-for-raspberry-pi/</loc>
     <lastmod>2020-04-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/categories/raspberry/</loc>
+    <loc>https://bombons.github.io/categories/raspberry/</loc>
     <lastmod>2020-04-03T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/categories/example/</loc>
+    <loc>https://bombons.github.io/categories/example/</loc>
     <lastmod>2018-08-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/markdown/</loc>
+    <loc>https://bombons.github.io/tags/markdown/</loc>
     <lastmod>2018-08-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/2018-08-30-markdown-guide/</loc>
+    <loc>https://bombons.github.io/post/2018-08-30-markdown-guide/</loc>
     <lastmod>2018-08-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/</loc>
+    <loc>https://bombons.github.io/tags/</loc>
     <lastmod>2018-08-30T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/basic-elements/</loc>
+    <loc>https://bombons.github.io/tags/basic-elements/</loc>
     <lastmod>2018-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/basic-elements/</loc>
+    <loc>https://bombons.github.io/post/basic-elements/</loc>
     <lastmod>2018-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/css/</loc>
+    <loc>https://bombons.github.io/tags/css/</loc>
     <lastmod>2018-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/categories/development/</loc>
+    <loc>https://bombons.github.io/categories/development/</loc>
     <lastmod>2018-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/html/</loc>
+    <loc>https://bombons.github.io/tags/html/</loc>
     <lastmod>2018-04-16T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/creating-a-new-theme/</loc>
+    <loc>https://bombons.github.io/post/creating-a-new-theme/</loc>
     <lastmod>2014-09-28T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/about/</loc>
+    <loc>https://bombons.github.io/about/</loc>
     <lastmod>2014-04-09T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/goisforlovers/</loc>
+    <loc>https://bombons.github.io/post/goisforlovers/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/development/</loc>
+    <loc>https://bombons.github.io/tags/development/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/hugoisforlovers/</loc>
+    <loc>https://bombons.github.io/post/hugoisforlovers/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/go/</loc>
+    <loc>https://bombons.github.io/tags/go/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/categories/golang/</loc>
+    <loc>https://bombons.github.io/categories/golang/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/golang/</loc>
+    <loc>https://bombons.github.io/tags/golang/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/hugo/</loc>
+    <loc>https://bombons.github.io/tags/hugo/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/templates/</loc>
+    <loc>https://bombons.github.io/tags/templates/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/tags/themes/</loc>
+    <loc>https://bombons.github.io/tags/themes/</loc>
     <lastmod>2014-04-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://bombons.github.io/hack/post/migrate-from-jekyll/</loc>
+    <loc>https://bombons.github.io/post/migrate-from-jekyll/</loc>
     <lastmod>2014-03-10T00:00:00+00:00</lastmod>
   </url>
   
