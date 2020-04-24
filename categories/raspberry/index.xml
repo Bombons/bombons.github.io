@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>raspberry on Mainroad</title>
+    <link>https://bombons.github.io/hack/categories/raspberry/</link>
+    <description>Recent content in raspberry on Mainroad</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 03 Apr 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://bombons.github.io/hack/categories/raspberry/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PWM Regulated Fan Based on CPU Temperature for Raspberry Pi</title>
+      <link>https://bombons.github.io/hack/post/2020-04-03-pwm-regulated-fan-based-on-cpu-temperature-for-raspberry-pi/</link>
+      <pubDate>Fri, 03 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://bombons.github.io/hack/post/2020-04-03-pwm-regulated-fan-based-on-cpu-temperature-for-raspberry-pi/</guid>
+      <description>Many cases for Raspberry Pi come with a little 5V fan in order to help cooling the CPU. However, these fans are usually pretty noisy and many people plug it on the 3V3 pin to reduce the noise. These fans are usually rated for 200mA which is pretty high for the 3V3 regulator on the RPi. This project will teach you how to regulate the fan speed based on CPU temperature.</description>
+    </item>
+    
+  </channel>
+</rss>

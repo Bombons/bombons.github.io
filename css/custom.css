@@ -1,0 +1,25 @@
+.content-wrapper > ul {
+  padding: 0px 12px 0px 12px;
+  font-size: 1.2em
+}
+
+.content-wrapper > ul > li > span.date {
+    font-weight: bold;
+	font-family: Helvetica, monospace;
+}
+
+.content-wrapper > ul > li > a {
+    padding-left: 10px
+}
+
+body {
+    font-family: Helvetica, sans-serif;
+}
+
+pre {
+	border-radius: 5px
+}
+
+code {
+	border-radius: 5px
+}
