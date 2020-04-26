@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>How to create or modify a simple System SSDT.aml by means of DSDT and IOREG ACPI information - bombons</title>
+	<script>(function(d,e){d[e]=d[e].replace("no-js","js");})(document.documentElement,"className");</script>
+	<meta name="description" content="">
+	
+	
+	<link rel="dns-prefetch" href="//fonts.googleapis.com">
+	<link rel="dns-prefetch" href="//fonts.gstatic.com">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700">
+	<link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/custom.css">
+	<link rel="shortcut icon" href="/favicon.ico">
+		
+</head>
+<body class="body">
+	<div class="container container--outer">
+		<header class="header">
+	<div class="container">
+		
+		
+<nav class="menu">
+	<button class="menu__btn" aria-haspopup="true" aria-expanded="false" tabindex="0">
+		<span class="menu__btn-title" tabindex="-1">Menu</span>
+	</button>
+	
+	<ul class="menu__list">
+		<li class="menu__item">
+			
+			
+			<a class="menu__link" href="https://bombons.github.io/">
+				<span class="menu__text">
+					~/bombons
+				</span>
+			</a>
+		</li>
+		<li class="menu__item">
+			
+			
+			<a class="menu__link" href="https://bombons.github.io/post">
+				<span class="menu__text">
+					~/archive
+				</span>
+			</a>
+		</li>
+		<li class="menu__item">
+			
+			
+			<a class="menu__link" href="https://bombons.github.io/index.xml">
+				<span class="menu__text">
+					~/rss
+				</span>
+			</a>
+		</li>
+	</ul>
+</nav>
+
+
+	</div>
+</header>
+
+		<div class="wrapper flex">
+			<div class="primary">
+			
+<main class="main" role="main">
+	<article class="post">
+		<header class="post__header">
+			<h1 class="post__title">How to create or modify a simple System SSDT.aml by means of DSDT and IOREG ACPI information</h1>
+			<div class="post__meta meta">
+<div class="meta__item-datetime meta__item">
+	<svg class="meta__icon icon icon-time" width="16" height="14" viewBox="0 0 30 28"><path d="M15 0C7 0 1 6 1 14s6 14 14 14 14-6 14-14S23 0 15 0zm0 25C9 25 4 20 4 14S9 3 15 3s11 5 11 11-5 11-11 11zm1-18h-2v8.4l6.8 4.4L22 18l-6-3.8V7z"/></svg><time class="meta__text" datetime="2020-04-26T00:00:00Z">2020-04-26</time></div><div class="meta__item-categories meta__item"><svg class="meta__icon icon icon-category" width="16" height="16" viewBox="0 0 16 16"><path d="m7 2l1 2h8v11h-16v-13z"/></svg><span class="meta__text"><a class="meta__link" href="/categories/ssdt/" rel="category">SSDT</a>
+	</span>
+</div></div>
+		</header>
+<div class="post__toc toc">
+	<div class="toc__title">Page content</div>
+	<div class="toc__menu">
+		<nav id="TableOfContents">
+  <ul>
+    <li><a href="#prologue">Prologue</a></li>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#ssdt-implementation">SSDT implementation</a></li>
+    <li><a href="#find-acpi-device-path">Find ACPI device path</a></li>
+    <li><a href="#ssdt">SSDT</a></li>
+    <li><a href="#verify">Verify</a></li>
+    <li><a href="#clover">Clover</a></li>
+  </ul>
+</nav>
+	</div>
+</div>
+<div class="content post__content clearfix">
+			<h2 id="prologue">Prologue</h2>
+<p>This is just a copy of the dead KGP site.</p>
+<h2 id="introduction">Introduction</h2>
+<p>PCI (Peripheral Component Interconnect), is a local computer bus for attaching hardware devices. Attached devices can take either the form of an integrated circuit fitted onto the motherboard itself (on-board devices like Audio or USB controllers) or an expansion card connected to any of the available PCI expansion slots on the Mainboard (e.g. GPU, TB-expansion card, 10GB NIC, BT/WIFI adapter, etc.)</p>
+<p>In order to properly implement a PCI device, one usually needs adequate ACPI (Advanced Configuration and Power Interface) DSDT (Differentiated System Description Table) Replacements and a sophisticated SSDT (Secondary System Description Table) implementing the correct ACPI tables, i.e ACPI path and PCI device properties.</p>
+<p>Some ACPI DSDT Replacements can be part of the config.plist others might be direct part of a System SSDT. Note that the ACPI DSDT Replacements in the config.plist or any System SSDT are mainboard and PCIe slot population dependent and have to be verified, adopted or modified for all mainboards different from a certain mainboard model or at least mainboard brand and for all builds with a PCIe slot population different from the one that constitutes the baseline for the respective ACPI replacements. The same also states for the ACPI path of a PCIe device in general. Any ACPI path implemented within some system SSDT is mainboard and PCIe slot population dependent and has to be verified, adopted or modified when applying the respective SSDT on a mainboard and within a PCIe slot population different from the baseline.</p>
+<blockquote>
+<p><strong>Important Note:</strong> It is strongly recommended to always perform a stepwise PCI Device implementation by means of a minimalistic starter SSDT, which just contains the Definition Block and Device Implementation for a single specific device. Once this PCI device has been successfully implemented, other PCI Devices can be added to the SSDT. In case that subsequently the implementation of a specific PCI Device would be erroneous and fail, also all other already successfully implemented PCI devices would disappear from Section &ldquo;PCI&rdquo; of Apple’s System report and the entire &ldquo;PCI&rdquo; Device implementation would fail. Thus a stepwise PCI device implementation/adaptation is highly recommended and sometimes even deemed necessary!</p>
+</blockquote>
+<h2 id="ssdt-implementation">SSDT implementation</h2>
+<p>Below one finds a simple example of an SSDT PCI device implementation for the OSXWIFI PCIe Adaptor in PCIe Slot-4 of the ASUS TUF X299 MARK 1. Once you understand the logics and methodology, how to implement the OSXWIFI Airport PCIe device, you should be also able to build and implement a more complex and sophisticated system SSDT by adding other PCIe devices.</p>
+<p>In general a DSDT consists of a DefinitionBlock and the underlying PCI device implementations.</p>
+<p>Within the definition block one must call or initialise existing, predefined and already implemented external devices or methods etc. that will be part of the respective SSDT PCI device implementation. In case of our OSXWIFI PCIe Adaptor in PCIe Slot-4 of the ASUS TUF X299 MARK 1, the required definition block looks the following in concordance with the original ACPI DSDT implementation visualised with IOREG.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">DefinitionBlock (<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SSDT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">BOMBNS</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">X299ARPT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0x00000000</span>)
+{
+    External (_SB_.PCI0.RP17, DeviceObj) <span style="color:#75715e">// (from opcode)
+</span><span style="color:#75715e"></span>    External (_SB_.PCI0.RP17.PXSX, DeviceObj) <span style="color:#75715e">// (from opcode)
+</span><span style="color:#75715e"></span>    External (DTGP, MethodObj) <span style="color:#75715e">// 5 Arguments (from opcode)
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>Method DTPG, is usually implemented in form of a separate external aml-file with the following content:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">DefinitionBlock (<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SSDT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">BOMBNS </span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">DTPG</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0x00001000</span>)
+{
+    Method (DTGP, <span style="color:#ae81ff">5</span>, NotSerialized)
+    {
+        If (LEqual (Arg0, ToUUID (<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">a0b5b7c6-1318-441c-b0c9-fe695eaf949b</span><span style="color:#e6db74">&#34;</span>)))
+        {
+            If (LEqual (Arg1, One))
+            {
+                If (LEqual (Arg2, Zero))
+                {
+                    Store (Buffer (One)
+                        {
+                            <span style="color:#ae81ff">0x03</span>
+                        }, Arg4)
+                    Return (One)
+                }
+
+                If (LEqual (Arg2, One))
+                {
+                    Return (One)
+                }
+            }
+        }
+
+        Store (Buffer (One)
+            {
+            <span style="color:#ae81ff">0x00</span>
+            }, Arg4)
+        Return (Zero)
+    }
+}
+</code></pre></div><p><code>PCI0.RP17.PXSX</code> is the original ACPI Device Path implemented in the original ACPI table defined within the DSDT.</p>
+<h2 id="find-acpi-device-path">Find ACPI device path</h2>
+<p><img src="/imgs/2020/04/LW4gU2NyZWVuc2hvdCAyMDIwLTA0LTI2IGF0IDA5LjE4LjMyCgA=.png" alt=""></p>
+<p>As the usual OSX ACPI PCI device nomenclature for an Airport device is <code>ARPT</code>, we want to subsequently replace the original device <code>PXPX</code> in form of a new device <code>ARPT</code>.</p>
+<h2 id="ssdt">SSDT</h2>
+<p>ACPI replacements sometimes can be quite complex and tricky, which basically depends on the original DSDT PCI device implementation. When nulling an existing PCI device to be replaced by a new PCI device definition, one therefore always has to inspect the respective DSDT ACPI device implementation.</p>
+<p>The original <code>DSDT.aml</code> of any system can be dumped into <code>/EFI/CLOVER/ACPI/original/</code> by pressing <code>F4</code> in the Clover boot menu, before booting the respective MacOS System partition. Like any other aml-file (also the SSDT is an aml-file), also the <code>DSDT.aml</code> can be edited, inspected and modified by means of <code>MaciASL.app</code> (courtesy to Rehabman), an ASL/DSL editor and ASL optimizer/compiler/dissambler.</p>
+<p>Instead of inspecting the <code>DSDT.aml</code>, many times it is easier to change within the IOREG from IOService to IOACPIPlane and inspect the original <code>PCI0.RP17</code> ACPI-Table implementation.</p>
+<p><img src="/imgs/2020/04/LW4gU2NyZWVuc2hvdCAyMDIwLTA0LTI2IGF0IDA5LjE4LjQ2CgA=.png" alt=""></p>
+<p>Thus, to free the way for implementing the desired new device <code>ARPT</code>, you needs to null <code>PCI0.RP17.PXSX</code> to finally implement <code>PCI0.RP17.ARPT</code> in form of a new device.</p>
+<p>Original SLOT ACPI tables can also just implement one device, thus one ACPI replacement is sufficient to implement the desired new variable. Other original SLOT ACPI tables can have more than two devices, thus one has to perform several replacements before being able to implement the desired new variable.</p>
+<p>Any existing, predefined external device used within the SSDT must also be called and initialised within the definition block of the SSDT. Thus, in our case of the OSXWIFI in Slot-4 of the ASUS TUF X299 MARK 1, we have to call and initialise, <code>PCI0.RP17</code> and <code>PCI0.RP17.PXSX</code> in the definition block of the SSDT.</p>
+<p>Finally, the intrinsic SSDT ACPI replacement subsequent to the definition block of the SSDT is realised as follows:</p>
+<p><img src="/imgs/2020/04/LW4gU2NyZWVuc2hvdCAyMDIwLTA0LTI1IGF0IDE5LjExLjE2CgA=.png" alt=""></p>
+<p>Note the peculiarity that existing, predefined external devices are addressed within the SSDT with a &ldquo;Scope&rdquo; command, while a new device must be implemented by means of a &ldquo;Device&rdquo; command followed by the ADR device definition of the former ADR device address. As <code>PXSX</code> was implemented in form of <code>PXSX@0</code>, also <code>ARPT</code> must be implemented in form of ARPT@0.</p>
+<p>In Fig.1 above, we can derive further OSXWIFI ARPT device properties from the IOREG Screenshot, i.e. &ldquo;device-id&rdquo;, &ldquo;vendor-id&rdquo; &ldquo;sub-system-vendor-
+ID&rdquo;, &ldquo;compatible&rdquo;, &ldquo;build-in&rdquo;, etc.&quot;, which can be considered within the further _DSM ARPT PCI device implementation and usually even extended by
+adding further known device properties like &ldquo;AAPL, slot-name&rdquo; (Slot-3), &ldquo;model&rdquo; (OSX WIFI Broadcom BCM94360CD 802.11 a/b/g/n/ac + Bluetooth
+4.0 Controller), &ldquo;name&rdquo; (AirPort Extreme), or &ldquo;device-type&rdquo; (AirPort Controller), which are in this case but not always rather cosmetic modifications.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">DefinitionBlock (<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SSDT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">BOMBNS</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">X299ARPT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0x00000000</span>)
+{
+    External (_SB_.PCI0.RP17, DeviceObj)
+    External (_SB_.PCI0.RP17.PXSX, DeviceObj)
+    External (DTGP, MethodObj)    <span style="color:#75715e">// 5 Arguments
+</span><span style="color:#75715e"></span>
+    Scope (_SB.PCI0.RP17)
+    {
+        Scope (PXSX)
+        {
+            Name (_STA, Zero)  <span style="color:#75715e">// _STA: Status
+</span><span style="color:#75715e"></span>        }
+
+        Device (ARPT)
+        {
+            Name (_ADR, Zero)  <span style="color:#75715e">// _ADR: Address
+</span><span style="color:#75715e"></span>            Method (_DSM, <span style="color:#ae81ff">4</span>, NotSerialized)  <span style="color:#75715e">// _DSM: Device-Specific Method
+</span><span style="color:#75715e"></span>            {
+                Local0 <span style="color:#f92672">=</span> Package (<span style="color:#ae81ff">0x0E</span>)
+                    {
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">built-in</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (One)
+                        {
+                             <span style="color:#ae81ff">0x00</span>                                             <span style="color:#75715e">// .
+</span><span style="color:#75715e"></span>                        },
+
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">device-id</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (<span style="color:#ae81ff">0x04</span>)
+                        {
+                             <span style="color:#ae81ff">0xBA</span>, <span style="color:#ae81ff">0x43</span>, <span style="color:#ae81ff">0x00</span>, <span style="color:#ae81ff">0x00</span>                           <span style="color:#75715e">// .C..
+</span><span style="color:#75715e"></span>                        },
+
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">AAPL,slot-name</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (<span style="color:#ae81ff">0x07</span>)
+                        {
+                            <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Slot-4</span><span style="color:#e6db74">&#34;</span>
+                        },
+
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">device_type</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (<span style="color:#ae81ff">0x13</span>)
+                        {
+                            <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">AirPort Controller</span><span style="color:#e6db74">&#34;</span>
+                        },
+
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">model</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (<span style="color:#ae81ff">0x4A</span>)
+                        {
+                            <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">OSX WIFI Broadcom BCM94360CD 802.11 a/b/g/n/ac + Bluetooth 4.0 Controller</span><span style="color:#e6db74">&#34;</span>
+                        },
+
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">compatible</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (<span style="color:#ae81ff">0x0D</span>)
+                        {
+                            <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">pci14e4,43ba</span><span style="color:#e6db74">&#34;</span>
+                        },
+
+                        <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#34;</span>,
+                        Buffer (<span style="color:#ae81ff">0x10</span>)
+                        {
+                            <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">AirPort Extreme</span><span style="color:#e6db74">&#34;</span>
+                        }
+                    }
+                DTGP (Arg0, Arg1, Arg2, Arg3, RefOf (Local0))
+                Return (Local0)
+            }
+        }
+    }
+}
+</code></pre></div><p>For Method _DSM to work, one requires another config.plist ACPI replacement, i.e. <code>_DSM -&gt; XDSM</code>.</p>
+<p>As the result we obtain a modified ARPT ACPI table, which ones more can be investigated by means of IOREG:</p>
+<p><img src="/imgs/2020/04/LW4gU2NyZWVuc2hvdCAyMDIwLTA0LTI2IGF0IDA5LjIxLjE2CgA=.png" alt=""></p>
+<h2 id="verify">Verify</h2>
+<p>After successfully execution of the ARPT SSDT during system boot, all respective ARPT PCI properties are once more revealed in section &ldquo;PCI&rdquo; of
+Apple’s System Report, including some info about whether or not the ARPT SSDT also successfully loads the respective ARPT PCI driver.</p>
+<p><img src="/imgs/2020/04/LW4gU2NyZWVuc2hvdCAyMDIwLTA0LTI2IGF0IDA5LjIyLjU1CgA=.png" alt=""></p>
+<p>I guess that the &ldquo;PCI&rdquo; snapshot of Apple’s System report above impressively reveals the true PCI device complexity of my iMacPro i9-7980XE, ASUS Prime X299 Deluxe, Nitro+ Radeon Vega 64 8GB, OSXWIFI, ASUS Aquantia 10GB NIC and GB TB3 Alpine Ridge system.</p>
+<p>It might rapidly become evident that the correct PCI Device implementation cannot be outlined and explained for each individual &ldquo;build-in&rdquo; or &ldquo;slotspecific&rdquo;
+PCI device. The complexity and effort would just exceed by far all available capacities. I therefore hope on your skills and flexibility to extend
+and apply the approach and methodology detailed above to any other &ldquo;build-in&rdquo; or &ldquo;slot-specific&rdquo; PCI device yet to be adopted or implemented, e.g. HDEF
+and HDAU (Audio), GFX0 (Display), XHCI (XHC USB 3.0) + XHC1 + XHC2 + XHC3 + XHC4 (all USB 3.1), XGBE+ETH0+ETH1 (10Gb + 1Gb
+LAN), UPSB + NHI0 + XHC5 (TB) etc.</p>
+<h2 id="clover">Clover</h2>
+<p>Any ACPI DSDT variable replacement directly implemented within a system SSDT can also be performed within the <code>config.plist</code>. In fact in this particular case, the <code>config.plist</code> equivalent would implement the direct <code>PXSX -&gt; ARPT</code> DSDT ACPI replacement. However, such replacement only can be performed in case that &ldquo;PXSX&rdquo; is uniquely defined within the system DSDT ACPI table.</p>
+<p>Any DSDT ACPI replacement in the <code>config.plist</code> is usually implemented under &ldquo;DSDT&rdquo; and &ldquo;Patches&rdquo; in Section &ldquo;ACPI&rdquo; of Clover Configurator.</p>
+<p>It consists of a replacement &ldquo;Comment&rdquo; like e.g. <code>PXSX -&gt; ARPT</code> and the proper DSDT ACPI replacement, implemented in form of a hexadecimal value for the variable to be replaced Find* [Hex] and a hexadecimal value for the resulting variable Replace* [Hex].</p>
+<p><img src="/imgs/2020/04/LW4gU2NyZWVuc2hvdCAyMDIwLTA0LTI1IGF0IDE5LjI4LjI4CgA=.png" alt=""></p>
+<p>Both hexadecimal values are simply the text -&gt; hexadecimal conversion of the text variables to be converted, in our particular case <code>41525054</code> is the hexadecimal conversion of <code>ARPT</code>, directly performed by means of the &ldquo;Hex Converter&rdquo; tool being part of Clover Configurator.</p>
+<blockquote>
+<p>Note that the DSDT ACPI replacement cannot be performed in both, config.plist and system SSDT! Just choose one of two possible methods!</p>
+</blockquote>
+<p>With the config.plist ACPI replacement, the respective SSDT ARPT PCI device implementation would look the following:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">DefinitionBlock (<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">SSDT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">BOMBNS</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">X299ARPT</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0x00000000</span>)
+{
+    External (_SB_.PCI0.RP17.ARPT, DeviceObj) <span style="color:#75715e">// (from opcode)
+</span><span style="color:#75715e"></span>    External (DTGP, MethodObj) <span style="color:#75715e">// 5 Arguments (from opcode)
+</span><span style="color:#75715e"></span>
+    Scope (ARPT)
+    {
+        Method (_PRW, <span style="color:#ae81ff">0</span>, NotSerialized) <span style="color:#75715e">// _PRW: Power Resources for Wake
+</span><span style="color:#75715e"></span>        {
+            ....
+        }
+    }
+}
+</code></pre></div><hr>
+<p>source: <a href="http://kgp-hackintosh-corner.com/how-to-create-or-modify-a-simple-system-ssdt-aml-by-means-of-dsdt-and-ioreg-acpi-information">kgp-hackintosh-corner.com</a></p>
+
+		</div>
+		<footer class="post__footer">
+			
+<div class="post__tags tags clearfix">
+	<svg class="tags__badge icon icon-tag" width="16" height="16" viewBox="0 0 32 32"><path d="M32 19c0 1-1 2-1 2L21 31s-1 1-2 1-2-1-2-1L2 16c-1-1-1.4-2-1.4-2S0 12.5 0 11V3C0 1.5.8.8.8.8S1.5 0 3 0h8c1.5 0 3 .6 3 .6S15 1 16 2l15 15s1 1 1 2zM7 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
+	<ul class="tags__list">
+		<li class="tags__item">
+			<a class="tags__link btn" href="/tags/ssdt/" rel="tag">SSDT</a>
+		</li>
+		<li class="tags__item">
+			<a class="tags__link btn" href="/tags/acpi/" rel="tag">ACPI</a>
+		</li>
+	</ul>
+</div>
+		</footer>
+	</article>
+</main>
+
+
+
+
+
+			</div>
+			
+		</div>
+		<footer class="footer">
+	<div class="container footer__container flex">
+		
+
+		<div class="footer__copyright">
+			&copy; 2020 bombons.
+			<span class="footer__copyright-credits"> </span>
+		</div>
+	</div>
+</footer>
+
+	</div>
+<script async defer src="/js/menu.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async></script>
+</body>
+</html>
